@@ -14,6 +14,7 @@ describe('Config', () => {
     axiosMock.onGet(ConfigUrl.DEVNET).reply(200, testingConfigData);
     axiosMock.onGet(ConfigUrl.TESTNET).reply(200, { domains: [] });
     axiosMock.onGet(ConfigUrl.MAINNET).networkError();
+    axiosMock.onGet("custom-url").reply(200, testingConfigData)
   });
 
   afterEach(() => {
@@ -63,5 +64,13 @@ describe('Config', () => {
     expect(domains).toEqual(
       testingConfigData.domains.map(({ id, chainId, name }) => ({ id, chainId, name })),
     );
+  });
+
+  it('Should accept custom environment config url', async function () {
+    await config.init(6, "custom-url");
+
+    const resources = config.getDomainResources();
+
+    expect(resources).toEqual(testingConfigData.domains[0].resources)
   });
 });

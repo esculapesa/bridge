@@ -13,21 +13,25 @@ export class Config {
   public environment!: RawConfig;
   public chainId!: number;
 
-  public async init(chainId: number, environment?: Environment): Promise<void> {
+  public async init(chainId: number, environment?: Environment | string): Promise<void> {
     this.chainId = chainId;
 
     let network;
-    switch (environment) {
-      case Environment.DEVNET: {
-        network = ConfigUrl.DEVNET;
-        break;
+    if (Object.values(Environment).includes(environment!)) {
+      switch (environment) {
+        case Environment.DEVNET: {
+          network = ConfigUrl.DEVNET;
+          break;
+        }
+        case Environment.TESTNET: {
+          network = ConfigUrl.TESTNET;
+          break;
+        }
+        default:
+          network = ConfigUrl.MAINNET;
       }
-      case Environment.TESTNET: {
-        network = ConfigUrl.TESTNET;
-        break;
-      }
-      default:
-        network = ConfigUrl.MAINNET;
+    } else {
+      network = environment
     }
 
     try {
