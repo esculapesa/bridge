@@ -90,12 +90,12 @@ export async function fungibleTransferFromEVM(): Promise<void> {
     sender: sender,
     amount: {
       // amount in wei
-      amount: "500000000000",
+      amount: "5000000000000000000",
     },
     from: evm1Network,
     to: substrateNetwork,
     resource: erc20Resource,
-    recipient: EVM_DESTINATION_ADDRESS,
+    recipient: account.address,
   };
 
   const fee = await assetTransfer.getFee(transfer);
