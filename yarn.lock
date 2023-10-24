@@ -455,7 +455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@buildwithsygma/sygma-contracts@npm:2.4.1":
+"@buildwithsygma/sygma-contracts@npm:*, @buildwithsygma/sygma-contracts@npm:2.4.1":
   version: 2.4.1
   resolution: "@buildwithsygma/sygma-contracts@npm:2.4.1"
   dependencies:
@@ -511,7 +511,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@buildwithsygma/sygma-sdk-evm-to-evm-fungible-transfer-example@workspace:examples/evm-to-evm-fungible-transfer"
   dependencies:
+    "@buildwithsygma/sygma-contracts": "*"
     "@buildwithsygma/sygma-sdk-core": "workspace:*"
+    chalk: ^5.3.0
     dotenv: ^16.3.1
     eslint: 8
     eslint-config-prettier: 8.3.0
@@ -5354,6 +5356,13 @@ __metadata:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: 4a3fef5cc34975c898ffe77141450f679721df9dde00f6c304353fa9c8b571929123b26a0e4617bde5018977eb655b31970c297b91b63ee83bb82aeb04666880
+  languageName: node
+  linkType: hard
+
+"chalk@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "chalk@npm:5.3.0"
+  checksum: 8297d436b2c0f95801103ff2ef67268d362021b8210daf8ddbe349695333eb3610a71122172ff3b0272f1ef2cf7cc2c41fdaa4715f52e49ffe04c56340feed09
   languageName: node
   linkType: hard
 

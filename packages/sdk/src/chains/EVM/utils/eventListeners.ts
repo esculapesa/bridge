@@ -50,10 +50,6 @@ export const createProposalExecutionEventListener = (
   const proposalFilter = bridge.filters.ProposalExecution(null, null, null);
 
   return bridge.on(proposalFilter, (originDomainId, depositNonce, dataHash, tx) => {
-    console.log('Proposal Execution event: ');
-    console.group();
-    console.log(originDomainId, depositNonce, homeDepositNonce);
-    console.groupEnd();
     if (depositNonce.toNumber() === homeDepositNonce) {
       callbackFn(originDomainId, depositNonce, dataHash, tx);
     }
