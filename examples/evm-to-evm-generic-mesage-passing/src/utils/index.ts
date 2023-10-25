@@ -1,12 +1,11 @@
-import { Bridge, ERC20Burnable } from "@buildwithsygma/sygma-contracts";
+import { Bridge } from "@buildwithsygma/sygma-contracts";
 import {
   Config,
   Environment,
-  createProposalExecutionEventListener,
   EthereumConfig,
-  EvmResource,
+  createProposalExecutionEventListener,
 } from "@buildwithsygma/sygma-sdk-core";
-import { providers, ethers } from "ethers";
+import { providers } from "ethers";
 import chalk from "chalk";
 
 export const execProposalExecutionEventListener = async (
@@ -47,29 +46,4 @@ export const getDomain = async (chainId: number): Promise<EthereumConfig> => {
   const domainConfig = config.getDomainConfig(id);
 
   return domainConfig as EthereumConfig;
-};
-
-export const approvalEvent = (erc20Handler: ERC20Burnable): void => {
-  const approvalEvent = erc20Handler.filters.Approval(null, null, null);
-
-  erc20Handler.once(approvalEvent, (owner, spender, amount) => {
-    console.log(
-      chalk.greenBright(
-        `Approved ${ethers.utils.formatUnits(
-          amount.toString(),
-          18
-        )} to Sygma Handler`
-      )
-    );
-  });
-};
-
-export const getFungibleResource = (
-  resources: EthereumConfig["resources"]
-): EvmResource => {
-  const resource = resources.find((resource) => resource.type === "fungible");
-
-  if (!resource) throw new Error("Fungible resource not found");
-
-  return resource as EvmResource;
 };

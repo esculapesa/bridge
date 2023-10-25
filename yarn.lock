@@ -529,7 +529,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@buildwithsygma/sygma-sdk-evm-to-evm-generic-message-example@workspace:examples/evm-to-evm-generic-mesage-passing"
   dependencies:
+    "@buildwithsygma/sygma-contracts": "*"
     "@buildwithsygma/sygma-sdk-core": "workspace:*"
+    chalk: ^5.3.0
     dotenv: 16.3.1
     eslint: 8
     eslint-config-prettier: 8.3.0
@@ -545,7 +547,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@buildwithsygma/sygma-sdk-evm-to-substrate-fungible-transfer-example@workspace:examples/evm-to-substrate-fungible-transfer"
   dependencies:
+    "@buildwithsygma/sygma-contracts": "*"
     "@buildwithsygma/sygma-sdk-core": "workspace:*"
+    chalk: ^5.3.0
     dotenv: ^16.3.1
     eslint: 8
     eslint-config-prettier: 8.3.0

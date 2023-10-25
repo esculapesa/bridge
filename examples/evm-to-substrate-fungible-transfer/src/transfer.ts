@@ -1,6 +1,14 @@
-import { EVMAssetTransfer, Environment } from "@buildwithsygma/sygma-sdk-core";
+import {
+  EVMAssetTransfer,
+  Environment,
+  Resource,
+  createDepositEventListener,
+} from "@buildwithsygma/sygma-sdk-core";
 import { Wallet, providers } from "ethers";
 import dotenv from "dotenv";
+import chalk from "chalk";
+import { Bridge__factory } from "@buildwithsygma/sygma-contracts";
+import { getDomain } from "./utils";
 
 dotenv.config();
 
@@ -21,6 +29,30 @@ export async function erc20Transfer(): Promise<void> {
   const wallet = new Wallet(privateKey ?? "", provider);
   const assetTransfer = new EVMAssetTransfer();
   await assetTransfer.init(provider, Environment.TESTNET);
+
+  const networkInfo = await provider.getNetwork();
+
+  const chainId = networkInfo.chainId;
+
+  const sourceDomain = await getDomain(chainId);
+
+  const destinationDomain = await getDomain(ROCOCO_PHALA_CHAIN_ID);
+
+  const { bridge: sourceBridge } = sourceDomain;
+
+  const bridge = Bridge__factory.connect(sourceBridge, provider);
+
+  createDepositEventListener(bridge, await wallet.getAddress(), () => {
+    const resource = sourceDomain.resources.find(
+      (resource: Resource) => (resource.resourceId = RESOURCE_ID)
+    );
+
+    console.log(
+      chalk.greenBright(
+        `Received deposit for resource: ${resource?.symbol}. Destination of the deposit is ${destinationDomain.name}`
+      )
+    );
+  });
 
   const transfer = await assetTransfer.createFungibleTransfer(
     await wallet.getAddress(),
@@ -49,4 +81,4 @@ export async function erc20Transfer(): Promise<void> {
   console.log("Sent transfer with hash: ", response.hash);
 }
 
-erc20Transfer().finally(() => { });
+erc20Transfer().finally(() => {});
