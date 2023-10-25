@@ -14,6 +14,7 @@ import { getDomain, execProposalExecutionEventListener } from "./utils";
 dotenv.config();
 
 const privateKey = process.env.PRIVATE_KEY;
+const destinationChainApiKey = process.env.DESTINATION_CHAIN_API_KEY;
 
 if (!privateKey) {
   throw new Error("Missing environment variable: PRIVATE_KEY");
@@ -26,9 +27,7 @@ const RESOURCE_ID =
 const EXECUTE_CONTRACT_ADDRESS = "0xdFA5621F95675D37248bAc9e536Aab4D86766663";
 const EXECUTE_FUNCTION_SIGNATURE = "0xa271ced2";
 const MAX_FEE = "3000000";
-const sourceProvider = new providers.JsonRpcProvider(
-  "https://eth-sepolia.g.alchemy.com/v2/e7pXMju7Tw_iBD5oQzvmdLI_L-PDpjBT"
-);
+const sourceProvider = new providers.JsonRpcProvider(destinationChainApiKey);
 const destinationProvider = new providers.JsonRpcProvider(
   "https://rpc.goerli.eth.gateway.fm/"
 );
