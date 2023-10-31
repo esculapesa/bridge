@@ -19,6 +19,7 @@ export const execProposalExecutionEventListener = async (
   if (destinationDepositNonce) {
     createProposalExecutionEventListener(
       destinationDepositNonce,
+      // @ts-ignore-next-line
       destinationBridge,
       () => {
         console.log(

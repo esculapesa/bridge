@@ -90,6 +90,7 @@ export async function genericMessage(): Promise<void> {
   );
 
   createDepositEventListener(
+    // @ts-ignore-next-line
     bridge,
     await wallet.getAddress(),
     (destinationDomainId, resourceId, depositNonce) => {

@@ -72,9 +72,11 @@ export async function erc20Transfer(): Promise<void> {
   );
 
   const assetTransfer = new EVMAssetTransfer();
+  // @ts-ignore-next-line
   await assetTransfer.init(provider, Environment.TESTNET);
 
   createDepositEventListener(
+    // @ts-ignore-next-line
     bridge,
     await wallet.getAddress(),
     (destinationDomainId, resourceId, depositNonce) => {
