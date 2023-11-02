@@ -21,14 +21,9 @@ import {
 dotenv.config();
 
 const privateKey = process.env.PRIVATE_KEY;
-const destinationChainApiKey = process.env.DESTINATION_CHAIN_API_KEY;
 
 if (!privateKey) {
   throw new Error("Missing environment variable PRIVATE_KEY");
-}
-
-if (!destinationChainApiKey) {
-  throw new Error("Missing environment variable DESTINATION_CHAIN_API_KEY");
 }
 
 const SEPOLIA_CHAIN_ID = 11155111;
@@ -109,11 +104,15 @@ export async function erc20Transfer(): Promise<void> {
   const fee = await assetTransfer.getFee(transfer);
   const approvals = await assetTransfer.buildApprovals(transfer, fee);
   for (const approval of approvals) {
-    const response = await wallet.sendTransaction(
-      approval as providers.TransactionRequest
-    );
+    const approvalReceipt = await (
+      await wallet.sendTransaction(approval as providers.TransactionRequest)
+    ).wait();
 
-    console.log(chalk.greenBright(`Sent approval with hash: ${response.hash}`));
+    console.log(
+      chalk.greenBright(
+        `Sent approval with hash: ${approvalReceipt.transactionHash}`
+      )
+    );
   }
 
   approvalEvent(Erc20Handler);
@@ -122,17 +121,20 @@ export async function erc20Transfer(): Promise<void> {
     transfer,
     fee
   );
-  const response = await wallet.sendTransaction(
-    transferTx as providers.TransactionRequest
-  );
+
+  const depositReceipt = await (
+    await wallet.sendTransaction(transferTx as providers.TransactionRequest)
+  ).wait();
 
   console.log(
-    chalk.greenBright(`Deposited funds on source chain: ${response.hash}`)
+    chalk.greenBright(
+      `Deposited funds on source chain: ${depositReceipt.transactionHash}`
+    )
   );
 
   console.log(
     chalk.greenBright(
-      `https://scan.test.buildwithsygma.com/transfer/${response.hash}`
+      `https://scan.test.buildwithsygma.com/transfer/${depositReceipt.transactionHash}`
     )
   );
 }
