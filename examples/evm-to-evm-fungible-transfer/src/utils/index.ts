@@ -21,9 +21,8 @@ export const execProposalExecutionEventListener = async (
     createProposalExecutionEventListener(
       destinationDepositNonce,
       destinationBridge,
-      (_, __, ___, tx) => {
+      () => {
         console.log(chalk.greenBright(`Proposal Executed on ${networkName}`));
-        console.log(`https://sepolia.etherscan.io/tx/${tx}`);
         process.exit(0);
       }
     );
