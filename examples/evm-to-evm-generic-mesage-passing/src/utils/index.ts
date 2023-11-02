@@ -19,12 +19,10 @@ export const execProposalExecutionEventListener = async (
   if (destinationDepositNonce) {
     createProposalExecutionEventListener(
       destinationDepositNonce,
-      // @ts-ignore-next-line
       destinationBridge,
-      () => {
-        console.log(
-          chalk.greenBright(`Proposal Execution event on ${networkName}`)
-        );
+      (_, __, ___, tx) => {
+        console.log(chalk.greenBright(`Proposal Executed on ${networkName}`));
+        console.log(`https://goerli.etherscan.io/tx/${tx}`);
         process.exit(0);
       }
     );

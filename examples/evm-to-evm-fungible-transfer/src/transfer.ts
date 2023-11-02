@@ -36,17 +36,17 @@ const RESOURCE_ID =
   "0x0000000000000000000000000000000000000000000000000000000000000300";
 
 export async function erc20Transfer(): Promise<void> {
-  const provider = new providers.JsonRpcProvider(
+  const sourceChainProvider = new providers.JsonRpcProvider(
     "https://rpc.goerli.eth.gateway.fm/"
   );
 
   const destinationChainProvider = new providers.JsonRpcProvider(
-    destinationChainApiKey
+    "https://rpc.notadegen.com/eth/sepolia"
   );
 
-  const wallet = new Wallet(privateKey ?? "", provider);
+  const wallet = new Wallet(privateKey ?? "", sourceChainProvider);
 
-  const network = await provider.getNetwork();
+  const network = await sourceChainProvider.getNetwork();
 
   const chainId = network.chainId;
 
@@ -56,11 +56,9 @@ export async function erc20Transfer(): Promise<void> {
 
   const { bridge: sourceBridgeAddress, resources } = sourceDomain;
 
-  const fungibleResource = getFungibleResource(resources);
+  const { address } = getFungibleResource(resources);
 
   const bridge = Bridge__factory.connect(sourceBridgeAddress, wallet);
-
-  const { address } = fungibleResource;
 
   const Erc20Handler = ERC20Burnable__factory.connect(address, wallet);
 
@@ -72,11 +70,9 @@ export async function erc20Transfer(): Promise<void> {
   );
 
   const assetTransfer = new EVMAssetTransfer();
-  // @ts-ignore-next-line
-  await assetTransfer.init(provider, Environment.TESTNET);
+  await assetTransfer.init(sourceChainProvider, Environment.TESTNET);
 
   createDepositEventListener(
-    // @ts-ignore-next-line
     bridge,
     await wallet.getAddress(),
     (destinationDomainId, resourceId, depositNonce) => {
@@ -130,7 +126,15 @@ export async function erc20Transfer(): Promise<void> {
     transferTx as providers.TransactionRequest
   );
 
-  console.log(chalk.greenBright(`Sent transfer with hash: ${response.hash}`));
+  console.log(
+    chalk.greenBright(`Deposited funds on source chain: ${response.hash}`)
+  );
+
+  console.log(
+    chalk.greenBright(
+      `https://scan.test.buildwithsygma.com/transfer/${response.hash}`
+    )
+  );
 }
 
-erc20Transfer().finally(() => {});
+erc20Transfer().finally(() => { });

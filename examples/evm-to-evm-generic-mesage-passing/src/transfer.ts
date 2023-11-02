@@ -5,7 +5,7 @@ import {
   Resource,
   createDepositEventListener,
 } from "@buildwithsygma/sygma-sdk-core";
-import { BigNumber, Wallet, providers, utils } from "ethers";
+import { Wallet, providers, utils } from "ethers";
 import chalk from "chalk";
 import { Bridge__factory } from "@buildwithsygma/sygma-contracts";
 import { Storage__factory } from "./Contracts";
@@ -14,7 +14,6 @@ import { getDomain, execProposalExecutionEventListener } from "./utils";
 dotenv.config();
 
 const privateKey = process.env.PRIVATE_KEY;
-const destinationChainApiKey = process.env.DESTINATION_CHAIN_API_KEY;
 
 if (!privateKey) {
   throw new Error("Missing environment variable: PRIVATE_KEY");
@@ -27,7 +26,10 @@ const RESOURCE_ID =
 const EXECUTE_CONTRACT_ADDRESS = "0xdFA5621F95675D37248bAc9e536Aab4D86766663";
 const EXECUTE_FUNCTION_SIGNATURE = "0xa271ced2";
 const MAX_FEE = "3000000";
-const sourceProvider = new providers.JsonRpcProvider(destinationChainApiKey);
+
+const sourceProvider = new providers.JsonRpcProvider(
+  "https://rpc.notadegen.com/eth/sepolia"
+);
 const destinationProvider = new providers.JsonRpcProvider(
   "https://rpc.goerli.eth.gateway.fm/"
 );
@@ -36,43 +38,6 @@ const storageContract = Storage__factory.connect(
   destinationProvider
 );
 const wallet = new Wallet(privateKey ?? "", sourceProvider);
-
-const fetchAfterValue = async (): Promise<BigNumber> =>
-  await storageContract.retrieve(await wallet.getAddress());
-
-const sleep = (ms: number): Promise<void> =>
-  new Promise((r) => setTimeout(r, ms));
-
-const waitUntilBridged = async (
-  valueBefore: BigNumber,
-  intervalDuration: number = 15000,
-  attempts: number = 8
-): Promise<void> => {
-  let i = 0;
-  let contractValueAfter: BigNumber;
-  for (;;) {
-    await sleep(intervalDuration);
-    contractValueAfter = await fetchAfterValue();
-    if (!contractValueAfter.eq(valueBefore)) {
-      console.log(chalk.greenBright("Transaction successfully bridged."));
-
-      console.log(
-        chalk.greenBright(
-          `Value before update: ${new Date(valueBefore.toNumber()).toString()}`
-        )
-      );
-      break;
-    }
-    i++;
-    if (i > attempts) {
-      // transaction should have been bridged already
-      console.log(
-        chalk.redBright("transaction is taking too much time to bridge!")
-      );
-      break;
-    }
-  }
-};
 
 export async function genericMessage(): Promise<void> {
   const sourceDomain = await getDomain(SOURCE_CHAIN_ID);
@@ -90,18 +55,14 @@ export async function genericMessage(): Promise<void> {
   );
 
   createDepositEventListener(
-    // @ts-ignore-next-line
     bridge,
     await wallet.getAddress(),
-    (destinationDomainId, resourceId, depositNonce) => {
-      const resource = sourceDomain.resources.find(
-        (resource: Resource) => (resource.resourceId = resourceId)
-      );
+    (_, __, depositNonce) => {
       const destinationDepositNonce = depositNonce.toNumber();
 
       console.log(
         chalk.greenBright(
-          `Received deposit for resource: ${resource?.symbol}. Destination of the deposit is ${destinationDomain.name}`
+          `Received message to call function on contract on ${destinationDomain.name}`
         )
       );
 
@@ -147,13 +108,17 @@ export async function genericMessage(): Promise<void> {
   const response = await wallet.sendTransaction(
     transferTx as providers.TransactionRequest
   );
-  console.log(chalk.greenBright(`Sent transfer with hash: ${response.hash}`));
-
+  console.log(
+    chalk.greenBright(`Sent message transfer with hash: ${response.hash}`)
+  );
+  console.log(
+    chalk.greenBright(
+      `https://scan.test.buildwithsygma.com/transfer/${response.hash}`
+    )
+  );
   console.log(
     chalk.greenBright("Waiting for relayers to bridge transaction...")
   );
-
-  await waitUntilBridged(contractValueBefore);
 }
 
-genericMessage().finally(() => {});
+genericMessage().finally(() => { });
