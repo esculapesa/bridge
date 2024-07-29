@@ -55,7 +55,6 @@ export abstract class BaseTransfer {
   }
   /**
    * Returns fee based on transfer amount.
-   * @param amount By default it is original amount passed in constructor
    */
 
   async getFee(): Promise<EvmFee> {
@@ -90,7 +89,7 @@ export abstract class BaseTransfer {
    * @param destination
    * @returns
    */
-  setDesinationDomain(destination: Domainlike): void {
+  setDestinationDomain(destination: Domainlike): void {
     const domain = this.config.getDomain(destination);
     this.destination = domain;
   }

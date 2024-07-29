@@ -12,11 +12,20 @@ import { BigNumber, constants, type PopulatedTransaction, utils } from 'ethers';
 
 import type { BaseTransferParams } from './baseTransfer.js';
 import { BaseTransfer } from './baseTransfer.js';
+import {
+  BasicFeeCalculator,
+  PercentageFeeCalculator,
+  TwapFeeCalculator,
+  getFeeInformation,
+} from './fee/index.js';
 import type { EvmFee, TransactionRequest } from './types.js';
-import { approve, getERC20Allowance } from './utils/approveAndCheckFns.js';
-import { erc20Transfer } from './utils/depositFns.js';
-import { createERCDepositData } from './utils/helpers.js';
-import { createTransactionRequest } from './utils/transaction.js';
+import {
+  approve,
+  getERC20Allowance,
+  erc20Transfer,
+  createERCDepositData,
+  createTransactionRequest,
+} from './utils/index.js';
 
 export interface FungibleTokenTransferRequest extends BaseTransferParams {
   resource: string | EvmResource;
@@ -165,6 +174,7 @@ class EvmFungibleAssetTransfer extends BaseTransfer {
 
     const erc20 = ERC20__factory.connect(this.resource.address, provider);
     const fee = await this.getFee();
+
     const feeHandlerAllowance = await getERC20Allowance(
       erc20,
       this.sourceAddress,
@@ -197,6 +207,8 @@ class EvmFungibleAssetTransfer extends BaseTransfer {
     const bridge = Bridge__factory.connect(domainConfig.bridge, provider);
     const fee = await this.getFee();
 
+    await this.verifyAccountBalance(fee);
+
     const transferTx = await erc20Transfer({
       bridgeInstance: bridge,
       domainId: this.destination.id.toString(),
@@ -206,5 +218,44 @@ class EvmFungibleAssetTransfer extends BaseTransfer {
     });
 
     return createTransactionRequest(transferTx);
+  }
+
+  async verifyAccountBalance(fee: EvmFee): Promise<void> {
+    const provider = new Web3Provider(this.sourceNetworkProvider);
+    const erc20 = ERC20__factory.connect(this.resource.address, provider);
+    const accountBalance = await erc20.balanceOf(this.sourceAddress);
+
+    // TODO: check cost calculation
+    const costs = BigNumber.from(this.amount).add(fee.fee);
+
+    if (accountBalance.lt(costs)) throw new Error('Insufficient account balance');
+  }
+
+  async getFee(): Promise<EvmFee> {
+    const provider = new providers.Web3Provider(this.sourceNetworkProvider);
+
+    const { feeHandlerAddress, feeHandlerType } = await getFeeInformation(
+      this.config,
+      provider,
+      this.source.id,
+      this.destination.id,
+      this.resource.resourceId,
+    );
+
+    const basicFeeCalculator = new BasicFeeCalculator();
+    const percentageFeeCalculator = new PercentageFeeCalculator();
+    const twapFeeCalculator = new TwapFeeCalculator();
+    basicFeeCalculator.setNextHandler(percentageFeeCalculator).setNextHandler(twapFeeCalculator);
+
+    return await basicFeeCalculator.calculateFee({
+      provider,
+      sender: this.sourceAddress,
+      sourceSygmaId: this.source.id,
+      destinationSygmaId: this.destination.id,
+      resourceSygmaId: this.resource.resourceId,
+      feeHandlerAddress,
+      feeHandlerType,
+      depositData: this.getDepositData(),
+    });
   }
 }
