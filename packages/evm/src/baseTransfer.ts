@@ -7,10 +7,12 @@ import type {
 } from '@buildwithsygma/core';
 import { providers, utils } from 'ethers';
 
-import { BasicFeeCalculator } from './fee/BasicFee.js';
-import { PercentageFeeCalculator } from './fee/PercentageFee.js';
-import { TwapFeeCalculator } from './fee/TwapFee.js';
-import { getFeeInformation } from './fee/getFeeInformation.js';
+import {
+  BasicFeeCalculator,
+  PercentageFeeCalculator,
+  TwapFeeCalculator,
+  getFeeInformation,
+} from './fee/index.js';
 import type { EvmFee } from './types.js';
 
 export interface BaseTransferParams {
