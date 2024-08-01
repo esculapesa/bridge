@@ -6,4 +6,4 @@ require('ts-node').register({
   transpileOnly: true
 });
 
-import './src/transfer.ts';
+import './src/transfer.mts';
