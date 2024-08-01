@@ -17,7 +17,7 @@
     "ethereum"
   ],
   "scripts": {
-    "transfer": "node --loader ts-node/esm register.mjs"
+    "transfer": "node loader.mjs"
   },
   "author": "Sygmaprotocol Product Team",
   "license": "LGPL-3.0-or-later",

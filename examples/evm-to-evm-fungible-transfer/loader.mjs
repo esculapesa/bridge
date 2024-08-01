@@ -1,2 +1,2 @@
-import 'ts-node/esm';
+import 'ts-node/register';
 import './src/transfer.ts';
