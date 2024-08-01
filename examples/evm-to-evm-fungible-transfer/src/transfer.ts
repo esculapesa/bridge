@@ -1,4 +1,9 @@
-import { EVMAssetTransfer, Environment, getTransferStatusData, TransferStatusResponse } from "@buildwithsygma/sygma-sdk-core";
+import {
+  EVMAssetTransfer,
+  Environment,
+  getTransferStatusData,
+  TransferStatusResponse
+} from "@buildwithsygma/sygma-sdk-core";
 import { Wallet, providers } from "ethers";
 import dotenv from "dotenv";
 
@@ -11,12 +16,14 @@ if (!privateKey) {
 }
 
 const DESTINATION_CHAIN_ID = Number(process.env.DESTINATION_CHAIN_ID) || 11155111;
-const RESOURCE_ID = process.env.RESOURCE_ID || "0x0000000000000000000000000000000000000000000000000000000000000300";
-const SOURCE_CHAIN_RPC_URL = process.env.SOURCE_CHAIN_RPC_URL || "https://ethereum-holesky-rpc.publicnode.com";
-
-const getStatus = async (txHash: string): Promise<TransferStatusResponse[]> => {
-  const data = await getTransferStatusData(Environment.TESTNET, txHash);
-  return data as TransferStatusResponse[];
+const RESOURCE_ID = process.env.RESOURCE_ID ||
+  "0x0000000000000000000000000000000000000000000000000000000000000300";
+const SOURCE_CHAIN_RPC_URL = process.env.SOURCE_CHAIN_RPC_URL || "https://ethereum-holesky-rpc.publicnode.com"
+const getStatus = async (
+  txHash: string
+): Promise<TransferStatusResponse[]> => {
+    const data = await getTransferStatusData(Environment.TESTNET, txHash);
+    return data as TransferStatusResponse[];
 };
 
 export async function erc20Transfer(): Promise<void> {
@@ -41,7 +48,10 @@ export async function erc20Transfer(): Promise<void> {
     );
     console.log("Sent approval with hash: ", response.hash);
   }
-  const transferTx = await assetTransfer.buildTransferTransaction(transfer, fee);
+  const transferTx = await assetTransfer.buildTransferTransaction(
+    transfer,
+    fee
+  );
   const response = await wallet.sendTransaction(
     transferTx as providers.TransactionRequest
   );
@@ -52,7 +62,7 @@ export async function erc20Transfer(): Promise<void> {
       .then((data) => {
         if (data[0]) {
           console.log("Status of the transfer", data[0].status);
-          if (data[0].status == "executed") {
+          if(data[0].status == "executed") {
             clearInterval(id);
             process.exit(0);
           }
