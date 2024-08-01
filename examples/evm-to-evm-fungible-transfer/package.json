@@ -24,8 +24,8 @@
   "devDependencies": {
     "dotenv": "^16.3.1",
     "eslint": "8",
-    "ts-node": "10.9.1",
-    "typescript": "5.0.4"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@buildwithsygma/sygma-sdk-core": "workspace:*",
