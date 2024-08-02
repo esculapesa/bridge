@@ -17,7 +17,7 @@
     "ethereum"
   ],
   "scripts": {
-    "transfer": "tsx src/transfer.ts"
+    "transfer": "tsx src/transfer.ts > output.log"
   },
   "author": "Sygmaprotocol Product Team",
   "license": "LGPL-3.0-or-later",
