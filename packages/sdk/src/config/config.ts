@@ -81,8 +81,14 @@ export class Config {
     destinationChainId: number,
     resourceId: string,
   ): { sourceDomain: Domain; destinationDomain: Domain; resource: Resource } {
+
+    console.log("destinationChainId: ", destinationChainId)
+    console.log("domains: ", this.getDomains())
+
+
     const sourceDomain = this.getDomains().find(domain => domain.chainId == this.chainId);
 
+    console.log("sourceDomain: ", sourceDomain)
     if (!sourceDomain) {
       throw new Error('Config for the provided destination domain is not setup');
     }
