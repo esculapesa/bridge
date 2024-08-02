@@ -83,6 +83,7 @@ export class Config {
   ): { sourceDomain: Domain; destinationDomain: Domain; resource: Resource } {
 
     console.log("destinationChainId: ", destinationChainId)
+    console.log("this.chainId: ", this.chainId)
     console.log("domains: ", this.getDomains())
 
 
