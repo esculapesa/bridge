@@ -28,7 +28,7 @@
     "typescript": "5.0.4"
   },
   "workspaces": [
-    "packages/*"
+    "../../packages/*"
   ],
   "dependencies": {
     "@buildwithsygma/sygma-sdk-core": "workspace:*",
