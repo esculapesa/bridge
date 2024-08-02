@@ -27,6 +27,9 @@
     "ts-node": "10.9.1",
     "typescript": "5.0.4"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "@buildwithsygma/sygma-sdk-core": "workspace:*",
     "ethers": "5.6.2"
