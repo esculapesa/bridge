@@ -15,6 +15,8 @@ export class Config {
 
   public async init(chainId: number, environment: Environment): Promise<void> {
     this.chainId = chainId;
+    console.log({localConfig})
+    console.log("localConfig ", localConfig)
     if (environment === Environment.LOCAL) {
       this.environment = localConfig;
       return;
